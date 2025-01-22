@@ -1,15 +1,18 @@
 {
   "name": "dungeonquest",
   "module": "src/index.ts",
-  "type": "module",
-  "scripts": {
-    "dev": "node ./src/index.ts"
-  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/keypress": "^2.0.30"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "dependencies": {}
+  "scripts": {
+    "dev": "node ./src/index.ts"
+  },
+  "type": "module",
+  "dependencies": {
+    "keypress": "^0.2.1"
+  }
 }
