@@ -10,8 +10,6 @@ export interface InputHandlers {
 }
 
 export class InputManager {
-  private pressedKeys: { [key: string]: boolean } = {};
-
   constructor(private handlers: InputHandlers) {
     this.setupKeyHandling();
   }
@@ -23,7 +21,6 @@ export class InputManager {
     }
 
     process.stdin.on("keypress", this.handleKeyPress.bind(this));
-    process.stdin.on("data", this.handleKeyRelease.bind(this));
   }
 
   private handleKeyPress(_ch: any, key: any): void {
@@ -37,36 +34,28 @@ export class InputManager {
     if (!keyName) return;
 
     switch (keyName) {
+      // Debugging
       case "t":
         return this.handlers.onAction("toggleLineOfSight");
+
+      // Actions
       case "i":
         return this.handlers.onAction("inventory");
       case "o":
         return this.handlers.onAction("options");
       case "q":
         return this.handlers.onAction("quit");
-    }
 
-    if (["w", "a", "s", "d"].includes(keyName)) {
-      if (!this.pressedKeys[keyName]) {
-        this.pressedKeys[keyName] = true;
-        this.processMovement();
-      }
+      // Movement
+      case "w":
+        return this.handlers.onMove("up");
+      case "s":
+        return this.handlers.onMove("down");
+      case "a":
+        return this.handlers.onMove("left");
+      case "d":
+        return this.handlers.onMove("right");
     }
-  }
-
-  private handleKeyRelease(data: Buffer): void {
-    const key = data.toString().toLowerCase();
-    if (["w", "a", "s", "d"].includes(key)) {
-      delete this.pressedKeys[key];
-    }
-  }
-
-  private processMovement(): void {
-    if (this.pressedKeys["w"]) this.handlers.onMove("up");
-    if (this.pressedKeys["s"]) this.handlers.onMove("down");
-    if (this.pressedKeys["a"]) this.handlers.onMove("left");
-    if (this.pressedKeys["d"]) this.handlers.onMove("right");
   }
 
   public cleanup(): void {

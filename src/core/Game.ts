@@ -1,7 +1,7 @@
 import { DungeonGenerator, type DungeonState } from "@/dungeon/Generator";
 import { ScreenManager } from "@/utils/ScreenManager";
 import { InputManager } from "@/utils/InputManager";
-import { UIState } from "@/core/UiState";
+import { UIState } from "@/core/UIState";
 
 export class Game {
   private dungeon!: DungeonState;
