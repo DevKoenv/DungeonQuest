@@ -1,9 +1,9 @@
 /** Cell types in the dungeon */
 enum CellType {
-  WALL = '\u2588',
-  EMPTY = '\u00A0',
-  DOT = '\u00b7',
-  PLAYER = '@'
+  WALL = "\u2588",
+  EMPTY = "\u00A0",
+  DOT = "\u00b7",
+  PLAYER = "@",
 }
 
 /** Configuration options for dungeon generation */
@@ -32,10 +32,10 @@ interface DungeonConfig {
 
 /** Room structure */
 interface Room {
-  h: number;    // height
-  w: number;    // width
-  row: number;  // top-left row position
-  col: number;  // top-left column position
+  h: number; // height
+  w: number; // width
+  row: number; // top-left row position
+  col: number; // top-left column position
 }
 
 /** Player data */
@@ -66,7 +66,7 @@ export interface DungeonState {
   player: Player;
   viewport: ViewportConfig;
   getViewport: () => string[][];
-  movePlayer: (direction: 'up' | 'down' | 'left' | 'right') => boolean;
+  movePlayer: (direction: "up" | "down" | "left" | "right") => boolean;
   getFullMap: () => string[][];
   toggleLineOfSight: () => void;
   visited: boolean[][];
@@ -98,10 +98,10 @@ export class DungeonGenerator {
       rooms: config.rooms ?? 25,
       viewportWidth: config.viewportWidth ?? 40,
       viewportHeight: config.viewportHeight ?? 20,
-      lineOfSight: config.lineOfSight ?? true
+      lineOfSight: config.lineOfSight ?? true,
     };
     this.lineOfSightEnabled = this.config.lineOfSight;
-    
+
     // Initialize map in constructor
     this.initializeMap();
   }
@@ -111,7 +111,8 @@ export class DungeonGenerator {
    */
   private setCell(row: number, col: number, value: CellType): boolean {
     if (!this.isInBounds(row, col)) return false;
-    if (!this.map[row]) this.map[row] = Array(this.config.cols).fill(CellType.WALL);
+    if (!this.map[row])
+      this.map[row] = Array(this.config.cols).fill(CellType.WALL);
     this.map[row][col] = value;
     return true;
   }
@@ -120,9 +121,12 @@ export class DungeonGenerator {
    * Checks if a room placement is valid
    */
   private isValidRoomPlacement(room: Room): boolean {
-    if (room.row < 0 || room.col < 0 || 
-        room.row + room.h >= this.config.rows || 
-        room.col + room.w >= this.config.cols) {
+    if (
+      room.row < 0 ||
+      room.col < 0 ||
+      room.row + room.h >= this.config.rows ||
+      room.col + room.w >= this.config.cols
+    ) {
       return false;
     }
 
@@ -138,7 +142,10 @@ export class DungeonGenerator {
   /**
    * Creates a corridor between two points with improved bounds checking
    */
-  private createCorridor(start: { row: number; col: number }, end: { row: number; col: number }): void {
+  private createCorridor(
+    start: { row: number; col: number },
+    end: { row: number; col: number },
+  ): void {
     if (!this.map || !this.map.length) {
       this.initializeMap();
     }
@@ -170,10 +177,9 @@ export class DungeonGenerator {
    * Checks if coordinates are within map bounds
    */
   private isInBounds(row: number, col: number): boolean {
-    return row >= 0 && 
-           row < this.config.rows && 
-           col >= 0 && 
-           col < this.config.cols;
+    return (
+      row >= 0 && row < this.config.rows && col >= 0 && col < this.config.cols
+    );
   }
 
   /**
@@ -184,30 +190,36 @@ export class DungeonGenerator {
       // Generate base size first
       const baseSize = this.randomEven(
         this.config.minRoomSize,
-        this.config.maxRoomSize
+        this.config.maxRoomSize,
       );
 
       // Generate height normally
       const h = this.randomEven(
         Math.max(baseSize - 2, this.config.minRoomSize),
-        Math.min(baseSize + 2, this.config.maxRoomSize)
+        Math.min(baseSize + 2, this.config.maxRoomSize),
       );
 
       // Double width to compensate for font aspect ratio
       const w = this.randomEven(
         Math.max(baseSize * 2 - 2, this.config.minRoomSize * 2),
-        Math.min(baseSize * 2 + 2, this.config.maxRoomSize * 2)
+        Math.min(baseSize * 2 + 2, this.config.maxRoomSize * 2),
       );
 
       // Aspect ratio check considering font metrics
-      const visualRatio = (w / this.FONT_ASPECT_RATIO) / h;
+      const visualRatio = w / this.FONT_ASPECT_RATIO / h;
       if (Math.abs(visualRatio - 1) > 0.2) continue;
 
       const room: Room = {
         h,
         w,
-        row: this.randomEven(this.config.padding, this.config.rows - h - this.config.padding),
-        col: this.randomEven(this.config.padding, this.config.cols - w - this.config.padding)
+        row: this.randomEven(
+          this.config.padding,
+          this.config.rows - h - this.config.padding,
+        ),
+        col: this.randomEven(
+          this.config.padding,
+          this.config.cols - w - this.config.padding,
+        ),
       };
 
       if (this.isValidRoomPlacement(room)) {
@@ -240,11 +252,11 @@ export class DungeonGenerator {
    * Calculates distance between rooms
    */
   private distanceBetweenRooms(a: Room, b: Room): number {
-    const centerA = { row: a.row + a.h/2, col: a.col + a.w/2 };
-    const centerB = { row: b.row + b.h/2, col: b.col + b.w/2 };
+    const centerA = { row: a.row + a.h / 2, col: a.col + a.w / 2 };
+    const centerB = { row: b.row + b.h / 2, col: b.col + b.w / 2 };
     return Math.sqrt(
-      Math.pow(centerB.row - centerA.row, 2) + 
-      Math.pow(centerB.col - centerA.col, 2)
+      Math.pow(centerB.row - centerA.row, 2) +
+        Math.pow(centerB.col - centerA.col, 2),
     );
   }
 
@@ -256,7 +268,11 @@ export class DungeonGenerator {
     this.initializeMap();
 
     // Generate rooms
-    for (let i = 0; i < this.config.maxAttempts && this.rooms.length < this.config.rooms; i++) {
+    for (
+      let i = 0;
+      i < this.config.maxAttempts && this.rooms.length < this.config.rooms;
+      i++
+    ) {
       const room = this.generateRoom();
       if (room) this.rooms.push(room);
     }
@@ -268,7 +284,7 @@ export class DungeonGenerator {
         edges.push({
           room1: this.rooms[i],
           room2: this.rooms[j],
-          distance: this.distanceBetweenRooms(this.rooms[i], this.rooms[j])
+          distance: this.distanceBetweenRooms(this.rooms[i], this.rooms[j]),
         });
       }
     }
@@ -283,9 +299,10 @@ export class DungeonGenerator {
     // Connect rooms using minimum spanning tree
     while (connected.size < this.rooms.length) {
       // Find the shortest edge that connects a connected room to an unconnected one
-      const edge = edges.find(e => 
-        (connected.has(e.room1) && !connected.has(e.room2)) ||
-        (connected.has(e.room2) && !connected.has(e.room1))
+      const edge = edges.find(
+        (e) =>
+          (connected.has(e.room1) && !connected.has(e.room2)) ||
+          (connected.has(e.room2) && !connected.has(e.room1)),
       );
 
       if (!edge) break;
@@ -293,11 +310,11 @@ export class DungeonGenerator {
       // Create corridor between rooms
       const room1Center = {
         row: edge.room1.row + Math.floor(edge.room1.h / 2),
-        col: edge.room1.col + Math.floor(edge.room1.w / 2)
+        col: edge.room1.col + Math.floor(edge.room1.w / 2),
       };
       const room2Center = {
         row: edge.room2.row + Math.floor(edge.room2.h / 2),
-        col: edge.room2.col + Math.floor(edge.room2.w / 2)
+        col: edge.room2.col + Math.floor(edge.room2.w / 2),
       };
 
       this.createCorridor(room1Center, room2Center);
@@ -308,14 +325,14 @@ export class DungeonGenerator {
     // Setup player and viewport
     const startRoom = this.rooms[0];
     const player: Player = {
-      row: startRoom.row + Math.floor(startRoom.h/2),
-      col: startRoom.col + Math.floor(startRoom.w/2),
-      char: CellType.PLAYER
+      row: startRoom.row + Math.floor(startRoom.h / 2),
+      col: startRoom.col + Math.floor(startRoom.w / 2),
+      char: CellType.PLAYER,
     };
 
     const viewport: ViewportConfig = {
       width: this.config.viewportWidth,
-      height: this.config.viewportHeight
+      height: this.config.viewportHeight,
     };
 
     return {
@@ -328,13 +345,13 @@ export class DungeonGenerator {
       getViewport: this.createViewportGetter(player, viewport),
       movePlayer: this.createMoveFunction(player),
       getFullMap: () => {
-        const fullMap = this.map.map(row => [...row]);
+        const fullMap = this.map.map((row) => [...row]);
         fullMap[player.row][player.col] = player.char;
         return fullMap;
       },
       toggleLineOfSight: () => {
         this.lineOfSightEnabled = !this.lineOfSightEnabled;
-      }
+      },
     };
   }
 
@@ -345,7 +362,7 @@ export class DungeonGenerator {
     this.map = Array(this.config.rows)
       .fill(null)
       .map(() => Array(this.config.cols).fill(CellType.WALL));
-    
+
     this.visited = Array(this.config.rows)
       .fill(null)
       .map(() => Array(this.config.cols).fill(false));
@@ -354,7 +371,12 @@ export class DungeonGenerator {
   /**
    * Determines if a point is visible from player position using ray casting
    */
-  private isVisible(fromRow: number, fromCol: number, toRow: number, toCol: number): boolean {
+  private isVisible(
+    fromRow: number,
+    fromCol: number,
+    toRow: number,
+    toCol: number,
+  ): boolean {
     const dx = Math.abs(toCol - fromCol);
     const dy = Math.abs(toRow - fromRow);
     const sx = fromCol < toCol ? 1 : -1;
@@ -386,8 +408,11 @@ export class DungeonGenerator {
   private createViewportGetter(player: Player, viewport: ViewportConfig) {
     return () => {
       // Center viewport on player
-      const startRow = Math.max(0, player.row - Math.floor(viewport.height/2));
-      const startCol = Math.max(0, player.col - Math.floor(viewport.width/2));
+      const startRow = Math.max(
+        0,
+        player.row - Math.floor(viewport.height / 2),
+      );
+      const startCol = Math.max(0, player.col - Math.floor(viewport.width / 2));
       const endRow = Math.min(this.config.rows, startRow + viewport.height);
       const endCol = Math.min(this.config.cols, startCol + viewport.width);
 
@@ -397,8 +422,8 @@ export class DungeonGenerator {
         .map(() => Array(viewport.width).fill(CellType.WALL));
 
       // Calculate offsets if map edge is reached
-      const offsetX = Math.max(0, Math.floor(viewport.width/2) - player.col);
-      const offsetY = Math.max(0, Math.floor(viewport.height/2) - player.row);
+      const offsetX = Math.max(0, Math.floor(viewport.width / 2) - player.col);
+      const offsetY = Math.max(0, Math.floor(viewport.height / 2) - player.row);
 
       // Update visited cells and render viewport
       for (let row = startRow; row < endRow; row++) {
@@ -406,25 +431,32 @@ export class DungeonGenerator {
           const viewY = row - startRow + offsetY;
           const viewX = col - startCol + offsetX;
 
-          if (viewY >= 0 && viewY < viewport.height && 
-              viewX >= 0 && viewX < viewport.width) {
-            const isCurrentlyVisible = !this.lineOfSightEnabled || 
-                                     this.isVisible(player.row, player.col, row, col);
-            
+          if (
+            viewY >= 0 &&
+            viewY < viewport.height &&
+            viewX >= 0 &&
+            viewX < viewport.width
+          ) {
+            const isCurrentlyVisible =
+              !this.lineOfSightEnabled ||
+              this.isVisible(player.row, player.col, row, col);
+
             if (isCurrentlyVisible) {
               this.visited[row][col] = true;
               view[viewY][viewX] = this.map[row][col];
             } else if (this.visited[row][col]) {
-              view[viewY][viewX] = 
-                this.map[row][col] === CellType.WALL ? CellType.WALL : CellType.DOT;
+              view[viewY][viewX] =
+                this.map[row][col] === CellType.WALL
+                  ? CellType.WALL
+                  : CellType.DOT;
             }
           }
         }
       }
 
       // Add player
-      const playerViewY = Math.floor(viewport.height/2);
-      const playerViewX = Math.floor(viewport.width/2);
+      const playerViewY = Math.floor(viewport.height / 2);
+      const playerViewX = Math.floor(viewport.width / 2);
       view[playerViewY][playerViewX] = CellType.PLAYER;
 
       return view;
@@ -435,15 +467,22 @@ export class DungeonGenerator {
    * Creates the player movement function
    */
   private createMoveFunction(player: Player) {
-    return (direction: 'up' | 'down' | 'left' | 'right'): boolean => {
+    return (direction: "up" | "down" | "left" | "right"): boolean => {
       const newPos = {
-        row: player.row + (direction === 'down' ? 1 : direction === 'up' ? -1 : 0),
-        col: player.col + (direction === 'right' ? 1 : direction === 'left' ? -1 : 0)
+        row:
+          player.row + (direction === "down" ? 1 : direction === "up" ? -1 : 0),
+        col:
+          player.col +
+          (direction === "right" ? 1 : direction === "left" ? -1 : 0),
       };
 
-      if (newPos.row >= 0 && newPos.row < this.config.rows &&
-          newPos.col >= 0 && newPos.col < this.config.cols &&
-          this.map[newPos.row][newPos.col] === CellType.EMPTY) {
+      if (
+        newPos.row >= 0 &&
+        newPos.row < this.config.rows &&
+        newPos.col >= 0 &&
+        newPos.col < this.config.cols &&
+        this.map[newPos.row][newPos.col] === CellType.EMPTY
+      ) {
         player.row = newPos.row;
         player.col = newPos.col;
         return true;

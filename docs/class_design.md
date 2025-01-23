@@ -13,6 +13,7 @@
 # **Entity Class Hierarchy**
 
 2. **Entity** (Base Class)
+
    - **Attributes**:
      - `name` (string): The entity's name.
      - `health` (number): Current health points.
@@ -26,6 +27,7 @@
      - `isAlive()`: Returns `true` if health > 0.
 
 3. **Player** (Inherits from `Entity`)
+
    - **Attributes**:
      - `classType` (string): "Warrior" or "Magician."
      - `mana` (number): Current mana points (used for skills).
@@ -69,6 +71,7 @@
 # **Dungeon System**
 
 6. **Dungeon**
+
    - **Attributes**:
      - `rooms` (Room[]): Array of rooms in the dungeon.
      - `difficulty` (number): Difficulty level of the dungeon.
