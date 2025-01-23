@@ -1,6 +1,6 @@
 /**
  * Procedural Dungeon Generator
- * 
+ *
  * Generates roguelike dungeons using:
  * - Random room placement
  * - Minimum spanning tree corridors
@@ -10,24 +10,24 @@
 
 /** Cell types that make up the dungeon layout */
 enum CellType {
-  WALL = "\u2588",    // Solid wall block
-  EMPTY = "\u00A0",   // Empty floor space
-  DOT = "\u00b7",     // Previously seen empty space
-  PLAYER = "@",       // Player character
+  WALL = "\u2588", // Solid wall block
+  EMPTY = "\u00A0", // Empty floor space
+  DOT = "\u00b7", // Previously seen empty space
+  PLAYER = "@", // Player character
 }
 
 /** Configuration options for dungeon generation */
 interface DungeonConfig {
-  rows?: number;            // Total dungeon height
-  cols?: number;            // Total dungeon width  
-  maxRoomSize?: number;     // Largest possible room dimension
-  minRoomSize?: number;     // Smallest possible room dimension
-  padding?: number;         // Space between rooms
-  maxAttempts?: number;     // Max tries to place rooms
-  rooms?: number;           // Target number of rooms
-  viewportWidth?: number;   // Player's view width
-  viewportHeight?: number;  // Player's view height
-  lineOfSight?: boolean;    // Enable fog of war
+  rows?: number; // Total dungeon height
+  cols?: number; // Total dungeon width
+  maxRoomSize?: number; // Largest possible room dimension
+  minRoomSize?: number; // Smallest possible room dimension
+  padding?: number; // Space between rooms
+  maxAttempts?: number; // Max tries to place rooms
+  rooms?: number; // Target number of rooms
+  viewportWidth?: number; // Player's view width
+  viewportHeight?: number; // Player's view height
+  lineOfSight?: boolean; // Enable fog of war
 }
 
 /** Room structure */

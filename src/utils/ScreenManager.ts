@@ -7,16 +7,16 @@ import { cursorTo, clearScreenDown } from "readline";
 export class ScreenManager {
   /** Width of the side panel in characters */
   private readonly SIDE_PANEL_WIDTH = 30;
-  
+
   /** Padding between main viewport and side panel */
   private readonly UI_PADDING = 3;
-  
+
   /** Cache of the last rendered frame for change detection */
   private lastRender: string = "";
-  
+
   /** Timestamp of last frame render for frame limiting */
   private lastRenderTime: number = 0;
-  
+
   /** Target frame time in ms (144 FPS) */
   private readonly FRAME_TIME = 1000 / 144;
 
@@ -77,10 +77,10 @@ export class ScreenManager {
       const contentLine =
         content[i]?.join("") ||
         " ".repeat(this.columns - this.SIDE_PANEL_WIDTH - this.UI_PADDING);
-      
+
       // Pad side panel line if missing
       const infoLine = sidePanel[i] || " ".repeat(this.SIDE_PANEL_WIDTH);
-      
+
       // Join with separator
       lines.push(`${contentLine} │ ${infoLine}`);
     }
