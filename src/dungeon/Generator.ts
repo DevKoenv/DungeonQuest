@@ -1,33 +1,33 @@
-/** Cell types in the dungeon */
+/**
+ * Procedural Dungeon Generator
+ *
+ * Generates roguelike dungeons using:
+ * - Random room placement
+ * - Minimum spanning tree corridors
+ * - Line of sight calculations
+ * - Viewport management
+ */
+
+/** Cell types that make up the dungeon layout */
 enum CellType {
-  WALL = "\u2588",
-  EMPTY = "\u00A0",
-  DOT = "\u00b7",
-  PLAYER = "@",
+  WALL = "\u2588", // Solid wall block
+  EMPTY = "\u00A0", // Empty floor space
+  DOT = "\u00b7", // Previously seen empty space
+  PLAYER = "@", // Player character
 }
 
 /** Configuration options for dungeon generation */
 interface DungeonConfig {
-  /** Number of rows in the dungeon */
-  rows?: number;
-  /** Number of columns in the dungeon */
-  cols?: number;
-  /** Maximum room size */
-  maxRoomSize?: number;
-  /** Minimum room size */
-  minRoomSize?: number;
-  /** Padding between rooms */
-  padding?: number;
-  /** Maximum attempts to place rooms */
-  maxAttempts?: number;
-  /** Number of rooms to generate */
-  rooms?: number;
-  /** Viewport width for player view */
-  viewportWidth?: number;
-  /** Viewport height for player view */
-  viewportHeight?: number;
-  /** Enable line of sight */
-  lineOfSight?: boolean;
+  rows?: number; // Total dungeon height
+  cols?: number; // Total dungeon width
+  maxRoomSize?: number; // Largest possible room dimension
+  minRoomSize?: number; // Smallest possible room dimension
+  padding?: number; // Space between rooms
+  maxAttempts?: number; // Max tries to place rooms
+  rooms?: number; // Target number of rooms
+  viewportWidth?: number; // Player's view width
+  viewportHeight?: number; // Player's view height
+  lineOfSight?: boolean; // Enable fog of war
 }
 
 /** Room structure */
@@ -73,8 +73,8 @@ export interface DungeonState {
 }
 
 /**
- * Procedural dungeon generator that creates connected room layouts using
- * a minimum spanning tree algorithm to ensure all rooms are accessible.
+ * Main dungeon generator class
+ * Uses procedural generation with minimum spanning tree room connections
  */
 export class DungeonGenerator {
   private readonly config: Required<DungeonConfig>;
@@ -82,7 +82,7 @@ export class DungeonGenerator {
   private rooms: Room[] = [];
   private readonly FONT_ASPECT_RATIO = 2; // Terminal fonts are typically 2:1 (height:width)
   private lineOfSightEnabled: boolean;
-  private visited: boolean[][] = [];
+  private visited: boolean[][] = []; // Tracks explored cells
 
   /**
    * Creates a new dungeon generator with specified configuration
@@ -261,7 +261,11 @@ export class DungeonGenerator {
   }
 
   /**
-   * Generates the complete dungeon
+   * Generates a complete dungeon using the following steps:
+   * 1. Place random rooms
+   * 2. Connect rooms with minimum spanning tree
+   * 3. Setup player and viewport
+   * 4. Initialize fog of war
    */
   public generate(): DungeonState {
     // Initialize empty map

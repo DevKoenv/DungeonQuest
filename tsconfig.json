@@ -25,9 +25,9 @@
     "noPropertyAccessFromIndexSignature": false,
 
     // Import aliases
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["src/*"]
     }
   }
 }
