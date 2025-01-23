@@ -5,7 +5,7 @@ export class ScreenManager {
   private readonly UI_PADDING = 3;
   private lastRender: string = '';
   private lastRenderTime: number = 0;
-  private readonly FRAME_TIME = 1000 / 60;
+  private readonly FRAME_TIME = 1000 / 144;
 
   constructor(private columns: number, private rows: number) {
     // Hide cursor
