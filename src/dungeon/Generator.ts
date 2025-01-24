@@ -14,6 +14,8 @@ enum CellType {
   EMPTY = "\u00A0", // Empty floor space
   DOT = "\u00b7", // Previously seen empty space
   PLAYER = "@", // Player character
+  START = "S", // Starting position
+  FINISH = "F", // Exit/finish position
 }
 
 /** Configuration options for dungeon generation */
@@ -144,7 +146,7 @@ export class DungeonGenerator {
    */
   private createCorridor(
     start: { row: number; col: number },
-    end: { row: number; col: number },
+    end: { row: number; col: number }
   ): void {
     if (!this.map || !this.map.length) {
       this.initializeMap();
@@ -190,19 +192,19 @@ export class DungeonGenerator {
       // Generate base size first
       const baseSize = this.randomEven(
         this.config.minRoomSize,
-        this.config.maxRoomSize,
+        this.config.maxRoomSize
       );
 
       // Generate height normally
       const h = this.randomEven(
         Math.max(baseSize - 2, this.config.minRoomSize),
-        Math.min(baseSize + 2, this.config.maxRoomSize),
+        Math.min(baseSize + 2, this.config.maxRoomSize)
       );
 
       // Double width to compensate for font aspect ratio
       const w = this.randomEven(
         Math.max(baseSize * 2 - 2, this.config.minRoomSize * 2),
-        Math.min(baseSize * 2 + 2, this.config.maxRoomSize * 2),
+        Math.min(baseSize * 2 + 2, this.config.maxRoomSize * 2)
       );
 
       // Aspect ratio check considering font metrics
@@ -214,11 +216,11 @@ export class DungeonGenerator {
         w,
         row: this.randomEven(
           this.config.padding,
-          this.config.rows - h - this.config.padding,
+          this.config.rows - h - this.config.padding
         ),
         col: this.randomEven(
           this.config.padding,
-          this.config.cols - w - this.config.padding,
+          this.config.cols - w - this.config.padding
         ),
       };
 
@@ -256,7 +258,7 @@ export class DungeonGenerator {
     const centerB = { row: b.row + b.h / 2, col: b.col + b.w / 2 };
     return Math.sqrt(
       Math.pow(centerB.row - centerA.row, 2) +
-        Math.pow(centerB.col - centerA.col, 2),
+        Math.pow(centerB.col - centerA.col, 2)
     );
   }
 
@@ -306,7 +308,7 @@ export class DungeonGenerator {
       const edge = edges.find(
         (e) =>
           (connected.has(e.room1) && !connected.has(e.room2)) ||
-          (connected.has(e.room2) && !connected.has(e.room1)),
+          (connected.has(e.room2) && !connected.has(e.room1))
       );
 
       if (!edge) break;
@@ -326,11 +328,28 @@ export class DungeonGenerator {
       connected.add(edge.room2);
     }
 
-    // Setup player and viewport
+    // Setup start and finish positions
     const startRoom = this.rooms[0];
-    const player: Player = {
+    const finishRoom = this.rooms[this.rooms.length - 1];
+
+    // Place start marker
+    const startPos = {
       row: startRoom.row + Math.floor(startRoom.h / 2),
       col: startRoom.col + Math.floor(startRoom.w / 2),
+    };
+    this.map[startPos.row][startPos.col] = CellType.START;
+
+    // Place finish marker in last room
+    const finishPos = {
+      row: finishRoom.row + Math.floor(finishRoom.h / 2),
+      col: finishRoom.col + Math.floor(finishRoom.w / 2),
+    };
+    this.map[finishPos.row][finishPos.col] = CellType.FINISH;
+
+    // Initialize player at start position
+    const player: Player = {
+      row: startPos.row,
+      col: startPos.col,
       char: CellType.PLAYER,
     };
 
@@ -379,7 +398,7 @@ export class DungeonGenerator {
     fromRow: number,
     fromCol: number,
     toRow: number,
-    toCol: number,
+    toCol: number
   ): boolean {
     const dx = Math.abs(toCol - fromCol);
     const dy = Math.abs(toRow - fromRow);
@@ -414,7 +433,7 @@ export class DungeonGenerator {
       // Center viewport on player
       const startRow = Math.max(
         0,
-        player.row - Math.floor(viewport.height / 2),
+        player.row - Math.floor(viewport.height / 2)
       );
       const startCol = Math.max(0, player.col - Math.floor(viewport.width / 2));
       const endRow = Math.min(this.config.rows, startRow + viewport.height);
@@ -485,11 +504,15 @@ export class DungeonGenerator {
         newPos.row < this.config.rows &&
         newPos.col >= 0 &&
         newPos.col < this.config.cols &&
-        this.map[newPos.row][newPos.col] === CellType.EMPTY
+        (this.map[newPos.row][newPos.col] === CellType.EMPTY ||
+          this.map[newPos.row][newPos.col] === CellType.FINISH)
       ) {
+        const reachedFinish =
+          this.map[newPos.row][newPos.col] === CellType.FINISH;
         player.row = newPos.row;
         player.col = newPos.col;
-        return true;
+
+        return reachedFinish ? false : true; // Return false to indicate level complete
       }
       return false;
     };

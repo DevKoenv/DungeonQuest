@@ -28,7 +28,7 @@ export class ScreenManager {
    */
   constructor(
     private columns: number,
-    private rows: number,
+    private rows: number
   ) {
     // Hide cursor during game rendering
     process.stdout.write("\x1B[?25l");
@@ -60,7 +60,7 @@ export class ScreenManager {
   public renderFrame(
     content: string[][],
     sidePanel: string[],
-    bottomPanel: string[],
+    bottomPanel: string[]
   ): void {
     // Skip render if within frame time limit
     const now = Date.now();

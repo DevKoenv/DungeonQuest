@@ -25,13 +25,13 @@ export class Game {
           case "inventory":
             // Toggle inventory state
             this.ui.setState(
-              this.ui.getState() === "INVENTORY" ? "PLAYING" : "INVENTORY",
+              this.ui.getState() === "INVENTORY" ? "PLAYING" : "INVENTORY"
             );
             break;
           case "options":
             // Toggle options state
             this.ui.setState(
-              this.ui.getState() === "OPTIONS" ? "PLAYING" : "OPTIONS",
+              this.ui.getState() === "OPTIONS" ? "PLAYING" : "OPTIONS"
             );
             break;
           case "toggleLineOfSight":
@@ -73,7 +73,7 @@ export class Game {
     this.screen.renderFrame(
       this.dungeon.getViewport(), // Render the dungeon viewport
       this.ui.renderSidePanel(), // Render the side panel
-      this.ui.renderBottomPanel(), // Render the bottom panel
+      this.ui.renderBottomPanel() // Render the bottom panel
     );
   }
 
