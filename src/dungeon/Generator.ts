@@ -19,7 +19,7 @@ enum CellType {
 }
 
 /** Configuration options for dungeon generation */
-interface DungeonConfig {
+export interface DungeonConfig {
   rows?: number; // Total dungeon height
   cols?: number; // Total dungeon width
   maxRoomSize?: number; // Largest possible room dimension
@@ -71,6 +71,16 @@ export interface DungeonState {
   movePlayer: (direction: "up" | "down" | "left" | "right") => boolean;
   getFullMap: () => string[][];
   toggleLineOfSight: () => void;
+  visited: boolean[][];
+}
+
+/** Generated dungeon data without player state */
+export interface GeneratedDungeon {
+  map: string[][];
+  rooms: Room[];
+  config: Required<DungeonConfig>;
+  startPosition: { row: number; col: number };
+  finishPosition: { row: number; col: number };
   visited: boolean[][];
 }
 
@@ -269,7 +279,7 @@ export class DungeonGenerator {
    * 3. Setup player and viewport
    * 4. Initialize fog of war
    */
-  public generate(): DungeonState {
+  public generate(): GeneratedDungeon {
     // Initialize empty map
     this.initializeMap();
 
@@ -346,35 +356,13 @@ export class DungeonGenerator {
     };
     this.map[finishPos.row][finishPos.col] = CellType.FINISH;
 
-    // Initialize player at start position
-    const player: Player = {
-      row: startPos.row,
-      col: startPos.col,
-      char: CellType.PLAYER,
-    };
-
-    const viewport: ViewportConfig = {
-      width: this.config.viewportWidth,
-      height: this.config.viewportHeight,
-    };
-
     return {
       map: this.map,
       rooms: this.rooms,
       config: this.config,
-      player,
-      viewport,
-      visited: this.visited,
-      getViewport: this.createViewportGetter(player, viewport),
-      movePlayer: this.createMoveFunction(player),
-      getFullMap: () => {
-        const fullMap = this.map.map((row) => [...row]);
-        fullMap[player.row][player.col] = player.char;
-        return fullMap;
-      },
-      toggleLineOfSight: () => {
-        this.lineOfSightEnabled = !this.lineOfSightEnabled;
-      },
+      startPosition: startPos,
+      finishPosition: finishPos,
+      visited: this.visited
     };
   }
 

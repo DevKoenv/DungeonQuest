@@ -2,6 +2,7 @@
   "name": "dungeonquest",
   "module": "src/index.ts",
   "devDependencies": {
+    "@types/blessed": "^0.1.25",
     "@types/bun": "latest",
     "@types/keypress": "^2.0.30",
     "prettier": "^3.4.2"
@@ -15,6 +16,7 @@
   },
   "type": "module",
   "dependencies": {
+    "blessed": "^0.1.81",
     "keypress": "^0.2.1"
   }
 }
