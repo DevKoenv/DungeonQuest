@@ -52,7 +52,9 @@ export class Dungeon implements DungeonState {
   }
 
   public toggleLineOfSight(): void {
-    this.lineOfSightEnabled = !this.lineOfSightEnabled;
+    if (process.env.NODE_ENV === "development") {
+      this.lineOfSightEnabled = !this.lineOfSightEnabled;
+    }
   }
 
   public getViewport(): string[][] {
