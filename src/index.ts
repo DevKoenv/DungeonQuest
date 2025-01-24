@@ -1,4 +1,4 @@
-import { Game } from "@/core/Game";
+import { GameManager } from "@/core/Game";
 
-const game = new Game();
-game.start();
+const gameManager = new GameManager();
+gameManager.startGame();

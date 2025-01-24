@@ -1,84 +1,108 @@
-import { DungeonGenerator, type DungeonState } from "@/dungeon/Generator";
-import { ScreenManager } from "@/utils/ScreenManager";
+import type { DungeonState } from "@/types/DungeonState";
+import { ScreenManager } from "@/screens/ScreenManager";
 import { InputManager } from "@/utils/InputManager";
 import { UIState } from "@/core/UIState";
+import { Warrior, Magician } from "@/classes/GameClass";
+import { Player } from "@/entities/Player";
+import { Dungeon } from "@/dungeon/Dungeon";
+import { DungeonGenerator } from "@/dungeon/Generator";
 
-export class Game {
-  private dungeon!: DungeonState; // The current state of the dungeon
-  private screen: ScreenManager; // Manages the screen rendering
-  private input: InputManager; // Manages user input
-  private ui: UIState; // Manages the UI state
+export class GameManager {
+  private dungeon!: DungeonState;
+  private screen: ScreenManager;
+  private input: InputManager;
+  private ui: UIState;
+  private gameState: 'MENU' | 'PLAYING' = 'MENU';
+  private player?: Player;
 
   constructor() {
-    const { columns, rows } = process.stdout; // Get terminal dimensions
-    this.screen = new ScreenManager(columns, rows); // Initialize screen manager with terminal dimensions
-    this.ui = new UIState(); // Initialize UI state
+    // Initialize UI components
+    this.screen = new ScreenManager(() => {
+      this.startNewGame();
+    });
+    
+    this.ui = new UIState();
 
-    // Initialize input manager with callbacks for different actions
+    // Initialize input handling
     this.input = new InputManager({
-      onMove: (direction) => {
-        this.dungeon.movePlayer(direction); // Move player in the dungeon
-        this.render(); // Re-render the screen
-      },
-      onAction: (action) => {
-        switch (action) {
-          case "inventory":
-            // Toggle inventory state
-            this.ui.setState(
-              this.ui.getState() === "INVENTORY" ? "PLAYING" : "INVENTORY",
-            );
-            break;
-          case "options":
-            // Toggle options state
-            this.ui.setState(
-              this.ui.getState() === "OPTIONS" ? "PLAYING" : "OPTIONS",
-            );
-            break;
-          case "toggleLineOfSight":
-            this.dungeon.toggleLineOfSight(); // Toggle line of sight in the dungeon
-            break;
-          case "quit":
-            this.input.cleanup(); // Cleanup input manager
-            process.exit(); // Exit the game
-        }
-        this.render(); // Re-render the screen
-      },
+      onMove: this.handleMove.bind(this),
+      onAction: this.handleAction.bind(this)
     });
 
-    this.updateViewport(); // Initialize the viewport
-    process.stdout.on("resize", () => this.updateViewport()); // Update viewport on terminal resize
+    // Show initial menu
+    this.screen.showMenu();
   }
 
-  // Update the viewport dimensions and generate a new dungeon
-  private updateViewport(): void {
-    const viewport = this.screen.getViewportDimensions(); // Get current viewport dimensions
-    const generator = new DungeonGenerator({
-      maxRoomSize: 15,
-      minRoomSize: 7,
-      padding: 2,
-      rooms: 25,
-      rows: 100,
-      cols: Math.max(160, viewport.width * 2),
-      viewportWidth: viewport.width,
-      viewportHeight: viewport.height,
-      lineOfSight: true,
-    });
-
-    this.dungeon = generator.generate(); // Generate a new dungeon
-    this.render(); // Render the screen
-  }
-
-  // Render the current state of the game
-  private render(): void {
-    this.screen.renderFrame(
-      this.dungeon.getViewport(), // Render the dungeon viewport
-      this.ui.renderSidePanel(), // Render the side panel
-      this.ui.renderBottomPanel(), // Render the bottom panel
-    );
-  }
-
-  // Start the game by rendering the initial state
-  public start(): void {
+  private handleMove(direction: "up" | "down" | "left" | "right"): void {
+    if (this.gameState !== 'PLAYING') return;
+    this.dungeon.movePlayer(direction);
     this.render();
+  }
+
+  private handleAction(action: "inventory" | "options" | "quit" | "toggleLineOfSight"): void {
+    if (this.gameState !== 'PLAYING') return;
+
+    switch (action) {
+      case "inventory":
+        this.ui.setState(
+          this.ui.getState() === "INVENTORY" ? "PLAYING" : "INVENTORY"
+        );
+        break;
+      case "options":
+        this.ui.setState(
+          this.ui.getState() === "OPTIONS" ? "PLAYING" : "OPTIONS"
+        );
+        break;
+      case "toggleLineOfSight":
+        this.dungeon.toggleLineOfSight();
+        break;
+      case "quit":
+        this.endGame();
+        return;
+    }
+    this.render();
+  }
+
+  public startGame(): void {
+    this.screen.showMenu();
+  }
+
+  private startNewGame(): void {
+    const gameScreen = this.screen.getGameScreen();
+    const generatedDungeon = gameScreen.getGeneratedDungeon();
+    const viewport = gameScreen.getViewportConfig();
+    
+    this.player = new Player(
+      "Hero",
+      new Warrior(),
+      generatedDungeon.startPosition,
+      viewport
+    );
+
+    this.dungeon = gameScreen.createDungeon(this.player);
+    this.gameState = 'PLAYING';
+    this.render();
+  }
+
+  public saveGame(): void {
+    throw new Error("Save game not implemented yet");
+  }
+
+  public loadGame(): void {
+    throw new Error("Load game not implemented yet");
+  }
+
+  public endGame(): void {
+    this.gameState = 'MENU';
+    this.screen.showMenu();
+  }
+
+  private render(): void {
+    if (this.gameState === 'PLAYING') {
+      this.screen.renderFrame(
+        this.dungeon.getViewport(),
+        this.ui.renderSidePanel()
+      );
+    }
   }
 }
