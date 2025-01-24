@@ -92,6 +92,10 @@ export class Player extends Entity {
     return false;
   }
 
+  getPosition(): { row: number; col: number } {
+    return { row: this.row, col: this.col };
+  }
+
   getViewportPosition(): { startRow: number; startCol: number; endRow: number; endCol: number } {
     const startRow = Math.max(0, this.row - Math.floor(this.viewport.height / 2));
     const startCol = Math.max(0, this.col - Math.floor(this.viewport.width / 2));

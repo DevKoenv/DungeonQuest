@@ -27,7 +27,10 @@ export class ScreenManager {
       () => this.quit()
     );
     
-    this.gameScreen = new GameScreen(this.screen);
+    this.gameScreen = new GameScreen(
+      this.screen,
+      () => this.showMenu()  // Pass showMenu as the callback
+    );
     this.showMenu();
   }
 

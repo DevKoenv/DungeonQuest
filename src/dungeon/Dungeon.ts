@@ -117,4 +117,14 @@ export class Dungeon implements DungeonState {
       }
     }
   }
+
+  // Check if player has reached the exit
+  public hasPlayerReachedExit(): boolean {
+    const playerPos = {
+      row: this.player.row,
+      col: this.player.col
+    };
+  
+    return this.map[playerPos.row][playerPos.col] === 'F';
+  }
 }
