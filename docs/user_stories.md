@@ -11,8 +11,8 @@
 
 - _As a player, I want to choose between Warrior or Magician, so I can customize my playstyle._
   - **Acceptance Criteria**:
-    - **Warrior**: High health, melee attacks, and armor.
-    - **Magician**: Low health, ranged spells, and mana pool.
+    - **Warrior**: High health, physical attacks, and armor.
+    - **Magician**: Low health, magic spells, and mana pool.
 - _As a player, I want each class to have unique abilities, so I can use different strategies._
   - **Acceptance Criteria**: Warriors have skills like “Slash” and “Block,” while Magicians have “Fireball” and “Heal.”
 
@@ -43,7 +43,6 @@
 - _As a player, I want to explore a dungeon with multiple rooms, so I can progress through the game._
   - **Acceptance Criteria**:
     - Rooms are randomly generated.
-    - Some rooms contain enemies, treasure, or traps.
 - _As a player, I want to heal and restock after clearing the dungeon, so I can prepare for the next run._
   - **Acceptance Criteria**: Players return to the shop between dungeon levels.
 
